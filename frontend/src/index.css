@@ -1,3 +1,13 @@
 @import "tailwindcss";
 @plugin "flowbite-react/plugin/tailwindcss";
 @source "../.flowbite-react/class-list.json";
+
+@theme {
+    /* WHITE BLUE */
+    --color-wbprimary : #2E7BC4;
+    --color-wbsecondary : #1a5a94;
+    --color-wbaccent : #F3F4F6;
+    --color-wbbg: #FFFFFF;
+    --color-wbtext : #1F2937;
+    --color-wbtext2 : #6B7280;
+}

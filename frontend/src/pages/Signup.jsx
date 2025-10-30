@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router';
+import { LocateFixed } from 'lucide-react';
 
-export default function SignIn() {
+const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -15,14 +17,18 @@ export default function SignIn() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex">
         {/* Left Side - Welcome Section */}
-        <div className="w-1/2 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] p-12 text-white relative overflow-hidden">
+        <div className="w-1/2 bg-gradient-to-br from-wbprimary to-wbsecondary p-12 text-white relative overflow-hidden">
           {/* Decorative circles */}
+        <Link to='/' className='text-2xl font-black flex items-center gap-2'>
+          <LocateFixed size={32}/>
+          C-TRACK
+        </Link>
+
           <div className="absolute top-10 right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
           <div className="absolute bottom-10 left-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
           
           <div className="relative z-10 h-full flex flex-col justify-center">
-            <h1 className="text-4xl font-bold mb-4">WELCOME</h1>
-            <p className="text-xl font-semibold mb-4">Crime Tracking System</p>
+            <h1 className="text-4xl font-bold mb-4">Crime Tracking System</h1>
             <p className="text-sm leading-relaxed opacity-90">
               Secure access portal for law enforcement personnel. 
               Manage criminal records, generate reports, and track cases efficiently. 
@@ -34,8 +40,8 @@ export default function SignIn() {
         {/* Right Side - Sign In Form */}
         <div className="w-1/2 p-12 flex flex-col justify-center">
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Sign in</h2>
-            <p className="text-sm text-gray-500">Enter your credentials to access your account</p>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Create An Account</h2>
+            <p className="text-sm text-gray-500">Enter your details to sign up</p>
           </div>
 
           <div>
@@ -91,10 +97,10 @@ export default function SignIn() {
 
             {/* Footer Links */}
             <div className="mt-6 text-center text-sm text-gray-600">
-              <span>Forgot your password? </span>
-              <a href="#" className="text-[#2E7BC4] hover:underline font-medium">
-                Reset it
-              </a>
+              <span>Already Have An Account? </span>
+              <Link to="/admin/signin" className="text-[#2E7BC4] hover:underline font-medium">
+                Sign in
+              </Link>
             </div>
           </div>
         </div>
@@ -102,3 +108,4 @@ export default function SignIn() {
     </div>
   );
 }
+export default SignUp

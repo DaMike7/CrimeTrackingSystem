@@ -9,26 +9,27 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Sign in attempt:', { email, password, rememberMe });
+    console.log('Sign up attempt:', { email, password, rememberMe });
     // Add your authentication logic here
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex">
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
         {/* Left Side - Welcome Section */}
-        <div className="w-1/2 bg-gradient-to-br from-wbprimary to-wbsecondary p-12 text-white relative overflow-hidden">
-          {/* Decorative circles */}
-        <Link to='/' className='text-2xl font-black flex items-center gap-2'>
-          <LocateFixed size={32}/>
-          C-TRACK
-        </Link>
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] p-8 md:p-12 text-white relative overflow-hidden">
+          {/* Logo - visible on mobile */}
+          <Link to='/' className='text-2xl font-black flex items-center gap-2 mb-8 md:mb-0'>
+            <LocateFixed size={32}/>
+            C-TRACK
+          </Link>
 
+          {/* Decorative circles */}
           <div className="absolute top-10 right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
           <div className="absolute bottom-10 left-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
           
-          <div className="relative z-10 h-full flex flex-col justify-center">
-            <h1 className="text-4xl font-bold mb-4">Crime Tracking System</h1>
+          <div className="relative z-10 h-full flex flex-col justify-center py-8 md:py-0">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">Crime Tracking System</h1>
             <p className="text-sm leading-relaxed opacity-90">
               Secure access portal for law enforcement personnel. 
               Manage criminal records, generate reports, and track cases efficiently. 
@@ -37,10 +38,10 @@ const SignUp = () => {
           </div>
         </div>
 
-        {/* Right Side - Sign In Form */}
-        <div className="w-1/2 p-12 flex flex-col justify-center">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Create An Account</h2>
+        {/* Right Side - Sign Up Form */}
+        <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col justify-center">
+          <div className="mb-6 md:mb-8">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">Create An Account</h2>
             <p className="text-sm text-gray-500">Enter your details to sign up</p>
           </div>
 
@@ -87,12 +88,12 @@ const SignUp = () => {
               </label>
             </div>
 
-            {/* Sign In Button */}
+            {/* Sign Up Button */}
             <button
               onClick={handleSubmit}
               className="w-full bg-[#2E7BC4] text-white py-3 rounded-lg font-semibold hover:bg-[#1a5a94] transition-colors duration-200"
             >
-              Sign in
+              Sign Up
             </button>
 
             {/* Footer Links */}

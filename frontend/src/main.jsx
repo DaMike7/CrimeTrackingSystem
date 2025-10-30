@@ -7,6 +7,7 @@ import App from './App.jsx'
 import SignIn from './pages/Signin.jsx';
 import SignUp from './pages/Signup.jsx';
 import AnonymousReport from './pages/FormPage.jsx';
+import AdminDashboard from './pages/Adminpanel.jsx';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: '/report/form',
     element: <AnonymousReport />
+  },
+  {
+    path: '/admin/dashboard',
+    element: <AdminDashboard />
   },
 ])
 

@@ -14,16 +14,16 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex">
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
         {/* Left Side - Welcome Section */}
-        <div className="w-1/2 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] p-12 text-white relative overflow-hidden">
-        <Link to='/' className='text-2xl font-black'>C-TRACK</Link>
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] p-8 md:p-12 text-white relative overflow-hidden">
+        <Link to='/' className='text-2xl font-black mb-8 md:mb-0 block'>C-TRACK</Link>
           <div className="absolute top-10 right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
           <div className="absolute bottom-10 left-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
           
-          <div className="relative z-10 h-full flex flex-col justify-center">
-            <h1 className="text-4xl font-bold mb-4">WELCOME BACK</h1>
-            <p className="text-xl font-semibold mb-4">Crime Tracking System</p>
+          <div className="relative z-10 h-full flex flex-col justify-center py-8 md:py-0">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">WELCOME BACK</h1>
+            <p className="text-lg md:text-xl font-semibold mb-4">Crime Tracking System</p>
             <p className="text-sm leading-relaxed opacity-90">
               Secure access portal for law enforcement personnel. 
               Manage criminal records, generate reports, and track cases efficiently. 
@@ -33,9 +33,9 @@ export default function SignIn() {
         </div>
 
         {/* Right Side - Sign In Form */}
-        <div className="w-1/2 p-12 flex flex-col justify-center">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Sign in</h2>
+        <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col justify-center">
+          <div className="mb-6 md:mb-8">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">Sign in</h2>
             <p className="text-sm text-gray-500">Enter your credentials to access the admin panel</p>
           </div>
 

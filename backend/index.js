@@ -3,6 +3,8 @@ import dotenv from "dotenv"
 import { connectDB } from './src/lib/db.js';
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import userRoutes from './src/routes/user.routes.js'
+import authRoutes from './src/routes/auth.routes.js'
 
 
 dotenv.config();
@@ -20,8 +22,8 @@ app.use(cors({
 app.use(cookieParser());
 
 // Routes
-//app.use('/api/auth', authRoutes);
-//app.use('/api/chat/inbox', messageRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/admin/', userRoutes);
 
 // Start server
 connectDB().then(() => {

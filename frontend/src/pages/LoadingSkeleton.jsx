@@ -1,7 +1,7 @@
 import React from 'react';
 import { LocateFixed } from 'lucide-react';
 
-export default function AdminDashboardSkeleton() {
+export default function LoadingSkeleton() {
   return (
     <div className="min-h-screen bg-gray-50 animate-pulse">
       {/* Top Navigation Skeleton */}

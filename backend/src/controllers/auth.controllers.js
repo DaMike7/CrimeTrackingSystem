@@ -10,11 +10,11 @@ export const signup = async (req, res) => {
         return res.status(400).json({ message: "Missing request body" });
       }
 
-    const {email, first_name, last_name, nickname, phone_number, password, country, city, ip_address , dob} = req.body
+    const {email, full_name, username, phone_number, password} = req.body
     
     try {
         console.log('Processing ...')
-        if (!email || !first_name || !last_name || !nickname || !phone_number || !password) {
+        if (!email || !full_name|| ! username || !phone_number || !password) {
             return res.status(400).json({message: "Some Fields Were Left Blank!"})
         }
         console.log('Validating ...')
@@ -29,9 +29,9 @@ export const signup = async (req, res) => {
         if (userEmail) return res.status(400).json({message: "Email already exists"})
 
         // Check if nickname already exists  
-        const lowerNickname = nickname.toLowerCase()
-        const userNickname = await User.findOne({ nickname:lowerNickname})
-        if (userNickname) return res.status(400).json({message: "Nickname already exists"})
+        const lowerUsername = username.toLowerCase()
+        const userName = await User.findOne({ username:lowerUsername})
+        if (userName) return res.status(400).json({message: "Username already exists"})
 
         // Check if phone number already exists
         const userPhoneNumber = await User.findOne({phone_number})
@@ -44,16 +44,11 @@ export const signup = async (req, res) => {
         // Create new user
         const newUser = new User({
             email,
-            first_name,
-            last_name,
+            full_name,
             phone_number,
             password: hashedPassword,
-            dob,
-            country,
-            nickname : lowerNickname,
-            city,
-            ip_address,
-            verified,
+            username : lowerUsername,
+            userType : 'admin',
         })
 
         if (newUser) {
@@ -64,10 +59,9 @@ export const signup = async (req, res) => {
             res.status(200).json({
                 success:true,
                 _id: newUser._id,
-                first_name: newUser.first_name,
-                last_name: newUser.last_name,
+                full_name : newUser.full_name,
                 profile_picture: newUser.profile_picture,
-                verified,
+                userType,
                 message: "Success!",
             })
         } else {
@@ -112,7 +106,7 @@ export const login = async (req,res) =>{
             return res.status(400).json({message:"Incorrect Password!"})
         }
         GenerateToken(user,res)
-        res.status(200).json({success:true,_id:user._id,first_name:user.first_name,last_name:user.last_name,email:user.email,nickname:user.nickname,profile_picture:user.profile_picture,message:"Login successfull"})
+        res.status(200).json({success:true,_id:user._id,full_name:user.full_name,email:user.email,username:user.username,profile_picture:user.profile_picture,message:"Login successfull"})
 
     } catch (error){
         console.log("Error in the Login controller ",error.message)

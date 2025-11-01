@@ -38,7 +38,7 @@ export const protectAdminRoute = async (req,res,next) =>{
         }
 
         const user = await User.findById(decoded.user_id).select("-password")
-        if (user.userType !== 'superuser') {
+        if (user.userType !== 'admin') {
             return res.status(403).json({ message: "Unauthorized access" });
           }
 

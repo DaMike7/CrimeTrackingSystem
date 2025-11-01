@@ -1,7 +1,7 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import AuthService from "./AuthService";
 import { useEffect } from "react";
-import SkeletonUi from "../components/SkeletonUi";
+import LoadingSkeleton from '../pages/LoadingSkeleton'
 
 const PrivateRoute = ({ children }) => {
     const { authUser, checkAuth, isCheckingAuth } = AuthService();
@@ -11,7 +11,7 @@ const PrivateRoute = ({ children }) => {
     }, [checkAuth]);
   
     if (isCheckingAuth) {
-      return <SkeletonUi />;
+      return <LoadingSkeleton/>;
     }
   
     return authUser ? children : <Navigate to="/user/login" />;
@@ -26,11 +26,11 @@ const PrivateRoute = ({ children }) => {
   
     if (isCheckingAuth) {
       return (
-        <SkeletonUi/>
+        <LoadingSkeleton/>
       );
     }
   
-    return authUser ? <Navigate to="/feed/home" /> : children;
+    return authUser ? <Navigate to="/cases" /> : children;
   };
 
   const AdminProtectedRoute = ({ children }) => {
@@ -42,11 +42,11 @@ const PrivateRoute = ({ children }) => {
   
     if (isCheckingAuth) {
       return (
-        <SkeletonUi/>
+        <LoadingSkeleton/>
       );
     }
   
-    return authUser.userType !== 'superuser' ? <Navigate to="/feed/home" /> : children;
+    return authUser.userType !== 'admin' ? <Navigate to="/cases" /> : children;
   };
 
 export const Routing = {UnauthenticatedRoute,PrivateRoute ,AdminProtectedRoute}

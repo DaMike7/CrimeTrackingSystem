@@ -10,11 +10,11 @@ export const signup = async (req, res) => {
         return res.status(400).json({ message: "Missing request body" });
       }
 
-    const {email, full_name, username, phone_number, password} = req.body
+    const {email, full_name, username, phone_number, password , badge_number , rank , department} = req.body
     
     try {
         console.log('Processing ...')
-        if (!email || !full_name|| ! username || !phone_number || !password) {
+        if (!email || !full_name|| ! username || !phone_number || !password || badge_number || rank || department) {
             return res.status(400).json({message: "Some Fields Were Left Blank!"})
         }
         console.log('Validating ...')
@@ -48,7 +48,11 @@ export const signup = async (req, res) => {
             phone_number,
             password: hashedPassword,
             username : lowerUsername,
-            userType : 'admin',
+            badge_number,
+            rank,
+            department,
+            userType: 'officer',
+            createdBy: req.user?._id,
         })
 
         if (newUser) {
@@ -61,7 +65,11 @@ export const signup = async (req, res) => {
                 _id: newUser._id,
                 full_name : newUser.full_name,
                 profile_picture: newUser.profile_picture,
-                userType,
+                badge_number : newUser.badge_number,
+                rank : newUser.rank,
+                department : newUser.department,
+                userType : newUser.userType,
+                created_by : newUser.createdBy,
                 message: "Success!",
             })
         } else {
@@ -96,7 +104,7 @@ export const login = async (req,res) =>{
     const {email,password} = req.body
     try{
         console.log('processing')
-        const user = await User.findOne({email})
+        const user = await User.findOne({email}).select('+password')
         if (!user){
             return res.status(400).json({message:"User not found"})
         }
@@ -106,7 +114,7 @@ export const login = async (req,res) =>{
             return res.status(400).json({message:"Incorrect Password!"})
         }
         GenerateToken(user,res)
-        res.status(200).json({success:true,_id:user._id,full_name:user.full_name,email:user.email,username:user.username,profile_picture:user.profile_picture,message:"Login successfull"})
+        res.status(200).json({success:true,_id:user._id,full_name:user.full_name,email:user.email,username:user.username,profile_picture:user.profile_picture,userType:user.userType,message:"Login successfull"})
 
     } catch (error){
         console.log("Error in the Login controller ",error.message)

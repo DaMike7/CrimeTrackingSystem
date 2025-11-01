@@ -96,9 +96,7 @@ const userSchema = new mongoose.Schema(
 )
 
 // Index for faster queries
-userSchema.index({ email: 1 });
 userSchema.index({ userType: 1 });
-userSchema.index({ badge_number: 1 });
 
 const User = mongoose.model("User", userSchema);
 

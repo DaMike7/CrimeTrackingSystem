@@ -1,4 +1,4 @@
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router";
 import AuthService from "./AuthService";
 import { useEffect } from "react";
 import LoadingSkeleton from '../pages/LoadingSkeleton'
@@ -30,7 +30,7 @@ const PrivateRoute = ({ children }) => {
       );
     }
   
-    return authUser ? <Navigate to="/cases" /> : children;
+    return authUser ? <Navigate to="/cases/all-cases" /> : children;
   };
 
   const AdminProtectedRoute = ({ children }) => {
@@ -46,7 +46,7 @@ const PrivateRoute = ({ children }) => {
       );
     }
   
-    return authUser.userType !== 'admin' ? <Navigate to="/cases" /> : children;
+    return authUser.userType !== 'admin' ? <Navigate to="/cases/all-cases" /> : children;
   };
 
 export const Routing = {UnauthenticatedRoute,PrivateRoute ,AdminProtectedRoute}

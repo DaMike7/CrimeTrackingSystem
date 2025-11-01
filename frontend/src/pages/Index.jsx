@@ -25,8 +25,7 @@ const Index = () => {
                         <span className="ml-2 self-center text-xl font-semibold whitespace-nowrap text-white">C-TRACK</span>
                     </Link>
                     <div className="flex items-center lg:order-2">
-                        <Link to="/admin/signin" className="text-white bg-transparent hover:bg-wbprimary focus:ring-4 focus:ring-gray-300 font-semibold rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 ">Sign in</Link>
-                        <Link to="/admin/signup" className="text-white bg-wbprimary hover:bg-wbsecondary hover:text-white focus:ring-4 focus:ring-primary-300 font-semibold rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 ">Admin</Link>
+                        <Link to="/admin/signin" className="text-white bg-wbprimary hover:bg-wbsecondary hover:text-white focus:ring-4 focus:ring-primary-300 font-semibold rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 ">Sign in</Link>
                         <button data-collapse-toggle="mobile-menu-2" type="button" className="inline-flex items-center p-2 ml-1 text-sm text-gdtext rounded-lg lg:hidden hover:bg-gdbg focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
                             <span className="sr-only">Open main menu</span>
                             <svg className="w-6 h-6" fillRule="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>

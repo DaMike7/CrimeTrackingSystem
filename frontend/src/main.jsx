@@ -5,7 +5,6 @@ import { createBrowserRouter , RouterProvider } from 'react-router';
 import './index.css'
 import App from './App.jsx'
 import SignIn from './pages/Signin.jsx';
-import SignUp from './pages/Signup.jsx';
 import AnonymousReport from './pages/FormPage.jsx';
 import AdminDashboard from './pages/Adminpanel.jsx';
 import ErrorPage from './pages/Errorpage.jsx';
@@ -18,10 +17,6 @@ const router = createBrowserRouter([
   {
     path: '/admin/signin',
     element: <SignIn />
-  },
-  {
-    path: '/admin/signup',
-    element: <SignUp />
   },
   {
     path: '/report/form',

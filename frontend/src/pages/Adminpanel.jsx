@@ -66,10 +66,6 @@ export default function AdminDashboard() {
                   className="bg-transparent border-none outline-none text-sm w-64"
                 />
               </div>
-              <button className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-                <Bell size={20} />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full flex items-center justify-center text-white font-semibold">
                   A
@@ -106,7 +102,7 @@ export default function AdminDashboard() {
               </a>
               <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Settings size={20} />
-                System Settings
+                Logout
               </a>
             </nav>
           </div>
@@ -213,15 +209,6 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </div>
-            </div>
-
-            {/* System Settings */}
-            <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-6">System Settings</h2>
-              <button className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl hover:shadow-md transition-shadow w-full sm:w-auto">
-                <Settings className="text-gray-600" size={24} />
-                <span className="font-semibold text-gray-800">Configuration</span>
-              </button>
             </div>
           </div>
         </main>

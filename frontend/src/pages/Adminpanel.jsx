@@ -84,15 +84,15 @@ export default function AdminDashboard() {
           <div className="p-6">
             <h2 className="text-lg font-bold text-gray-800 mb-6">Admin Interface</h2>
             <nav className="space-y-2">
-              <a href="#" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
+              <a href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
                 <LayoutDashboard size={20} />
                 Dashboard
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/users/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Users size={20} />
                 User Management
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/reports/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <FileText size={20} />
                 Crime Reports
               </a>

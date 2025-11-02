@@ -8,6 +8,10 @@ import SignIn from './pages/Signin.jsx';
 import AnonymousReport from './pages/FormPage.jsx';
 import AdminDashboard from './pages/Adminpanel.jsx';
 import ErrorPage from './pages/Errorpage.jsx';
+import Cases from './pages/Cases.jsx';
+import Profile from './pages/Profile.jsx';
+import UserManagement from './pages/UserManagement.jsx';
+import CrimeReports from './pages/CrimeReports.jsx';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +25,22 @@ const router = createBrowserRouter([
   {
     path: '/report/form',
     element: <AnonymousReport />
+  },
+   {
+    path: '/reports/all',
+    element: <CrimeReports />
+  },
+    {
+    path: '/cases/all-cases',
+    element: <Cases/>
+  },
+  {
+    path: '/users/all',
+    element: <UserManagement/>
+  },
+   {
+    path: '/profile',
+    element: <Profile/>
   },
   {
     path: '/admin/dashboard',

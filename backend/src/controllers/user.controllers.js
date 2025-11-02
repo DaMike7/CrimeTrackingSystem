@@ -9,7 +9,7 @@ export const showAllUsers = async (req, res) => {
         const users = await User.find({ 
             _id: { $ne: adminId } 
         })
-        .select('email full_name phone_number username profile_picture userType createdAt')
+        .select('email full_name phone_number username profile_picture userType createdBy createdAt badge_number rank department')
         .limit(limit * 1)
         .skip((page - 1) * limit)
         .sort({ createdAt: -1 });

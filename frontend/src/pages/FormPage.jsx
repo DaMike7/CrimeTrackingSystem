@@ -263,12 +263,12 @@ const AnonymousReport = () => {
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-[#2E7BC4] transition-colors cursor-pointer">
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600 mb-2">Drag and drop files here, or click to browse</p>
-                <p className="text-xs text-gray-500">Supported: Images, Videos, Documents (Max 10MB)</p>
+                <p className="text-xs text-gray-500">Supported: Images</p>
                 <input
                   type="file"
                   multiple
                   className="hidden"
-                  accept="image/*,video/*,.pdf,.doc,.docx"
+                  accept="image/*"
                 />
               </div>
 

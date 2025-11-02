@@ -24,10 +24,6 @@ const anonymousReportSchema = new mongoose.Schema(
             required: true,
         },
 
-        incidentTime: {
-            type: String,
-        },
-
         description: {
             type: String,
             required: true,

@@ -1,4 +1,4 @@
-import Case from '../models/crimerecords.models'
+import {Case} from '../models/crimerecords.models.js'
 
 // Generate unique case number
 const generateCaseNumber = async () => {
@@ -25,6 +25,7 @@ const generateCaseNumber = async () => {
 // @route   POST /api/cases
 // @access  Private (officers only)
 export const createCase = async (req, res) => {
+    console.log('...creating case')
     try {
         const {
             caseTitle,
@@ -39,6 +40,7 @@ export const createCase = async (req, res) => {
 
         // Validation
         if (!caseTitle || !caseType || !description || !location || !incidentDate || !assignedOfficer) {
+            console.log('failed')
             return res.status(400).json({
                 success: false,
                 message: 'Please provide all required fields: caseTitle, caseType, description, location, incidentDate, assignedOfficer'
@@ -94,6 +96,7 @@ export const createCase = async (req, res) => {
         // Populate officer details
         await newCase.populate('assignedOfficer', 'fullName email');
         await newCase.populate('createdBy', 'fullName email');
+        console.log('\nCase created!')
 
         res.status(201).json({
             success: true,
@@ -320,34 +323,6 @@ export const updateCaseStatus = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to update case status',
-            error: error.message
-        });
-    }
-};
-
-export const deleteCase = async (req, res) => {
-    try {
-        const { caseNumber } = req.params;
-
-        const deletedCase = await Case.findOneAndDelete({ caseNumber });
-
-        if (!deletedCase) {
-            return res.status(404).json({
-                success: false,
-                message: 'Case not found'
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: 'Case deleted successfully'
-        });
-
-    } catch (error) {
-        console.error('Error deleting case:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to delete case',
             error: error.message
         });
     }

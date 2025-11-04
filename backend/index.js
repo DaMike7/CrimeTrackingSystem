@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/', userRoutes);
 app.use('/api/crime', crimeRoutes);
-app.use('api/case',caseRoutes)
+app.use('/api/case',caseRoutes)
 // Start server
 connectDB().then(() => {
   app.listen(PORT, () => {

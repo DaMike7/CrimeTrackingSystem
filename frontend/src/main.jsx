@@ -13,6 +13,7 @@ import Profile from './pages/Profile.jsx';
 import UserManagement from './pages/UserManagement.jsx';
 import CrimeReports from './pages/CrimeReports.jsx';
 import { Routing } from './services/PrivateRoute.jsx';
+import AddCase from './pages/NewCase.jsx';
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
   {
     path: '/admin/dashboard',
     element: <Routing.AdminProtectedRoute><AdminDashboard /></Routing.AdminProtectedRoute>
+  },
+  {
+    path: '/cases/new-case',
+    element: <Routing.PrivateRoute><AddCase /></Routing.PrivateRoute>
   },
   {
     path: '*',

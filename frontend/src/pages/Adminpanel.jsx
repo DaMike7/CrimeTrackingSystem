@@ -15,16 +15,18 @@ import {
   Search,
   Menu,
   X,
-  LocateFixed
+  LocateFixed,
+  Activity
 } from 'lucide-react';
+import { Link, Navigate, useNavigate } from 'react-router';
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const stats = [
-    { label: 'Total Forms', value: '245', icon: FileText, color: 'bg-blue-500' },
-    { label: 'Miseral', value: '18', icon: Users, color: 'bg-red-500' },
-    { label: 'New Reports', value: '32', icon: TrendingUp, color: 'bg-green-500' },
+    { label: 'Total Cases', value: '245', icon: FileText, color: 'bg-blue-500' },
+    { label: 'Total Officers', value: '18', icon: Users, color: 'bg-red-500' },
+    { label: 'Total Crime Reports', value: '32', icon: TrendingUp, color: 'bg-green-500' },
   ];
 
   const recentReports = [
@@ -88,6 +90,10 @@ export default function AdminDashboard() {
                 <LayoutDashboard size={20} />
                 Dashboard
               </a>
+              <a href="/cases/all-cases" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <Activity size={20} />
+                Cases
+              </a>
               <a href="/users/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Users size={20} />
                 User Management
@@ -96,9 +102,9 @@ export default function AdminDashboard() {
                 <FileText size={20} />
                 Crime Reports
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <BarChart3 size={20} />
-                Data Analytics
+              <a href="/profile" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <Users size={20} />
+                Profile
               </a>
               <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Settings size={20} />
@@ -142,10 +148,6 @@ export default function AdminDashboard() {
                     <UserPlus className="text-[#2E7BC4] mb-3" size={32} />
                     <span className="font-semibold text-gray-800">Create Account</span>
                   </button>
-                  <button className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl hover:shadow-md transition-shadow">
-                    <UserCheck className="text-green-600 mb-3" size={32} />
-                    <span className="font-semibold text-gray-800">Role Assignment</span>
-                  </button>
                 </div>
               </div>
 
@@ -153,14 +155,14 @@ export default function AdminDashboard() {
               <div className="bg-white rounded-xl shadow-md p-6">
                 <h2 className="text-xl font-bold text-gray-800 mb-6">Crime Reports</h2>
                 <div className="grid grid-cols-2 gap-4">
-                  <button className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl hover:shadow-md transition-shadow">
+                  <Link to='/reports/all' className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl hover:shadow-md transition-shadow">
                     <Eye className="text-purple-600 mb-3" size={32} />
                     <span className="font-semibold text-gray-800">View Reports</span>
-                  </button>
-                  <button className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl hover:shadow-md transition-shadow">
+                  </Link>
+                  <Link to='/reports/new' className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl hover:shadow-md transition-shadow">
                     <FilePlus className="text-orange-600 mb-3" size={32} />
                     <span className="font-semibold text-gray-800">Add Report</span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -179,34 +181,6 @@ export default function AdminDashboard() {
                     <PieChart className="text-pink-600 mb-3" size={32} />
                     <span className="font-semibold text-gray-800">Mobilization</span>
                   </button>
-                </div>
-              </div>
-
-              {/* Recent Activity */}
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-800">Recent Reports</h2>
-                  <button className="text-[#2E7BC4] text-sm font-semibold hover:underline">View All</button>
-                </div>
-                <div className="space-y-3">
-                  {recentReports.map((report) => (
-                    <div key={report.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-gray-800">{report.id}</span>
-                          <span className={`px-2 py-1 text-xs rounded-full ${
-                            report.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                            report.status === 'Investigating' ? 'bg-blue-100 text-blue-700' :
-                            'bg-green-100 text-green-700'
-                          }`}>
-                            {report.status}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600">{report.type} • {report.location}</p>
-                        <p className="text-xs text-gray-400 mt-1">{report.time}</p>
-                      </div>
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>

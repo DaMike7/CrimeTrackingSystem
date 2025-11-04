@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router";
 import { 
   Search, 
   Plus, 
-  Eye, 
   Clock, 
   CheckCircle, 
   XCircle, 
@@ -13,90 +13,116 @@ import {
   LayoutDashboard,
   Users,
   FileText,
-  BarChart3,
   Settings,
   MapPin,
   Calendar,
-  AlertTriangle,
   ChevronRight,
   Image,
-  Download
+  Download,
+  Activity,
+  Loader
 } from 'lucide-react';
+import AuthService from '../services/AuthService';
+import CrimeService from '../services/CrimeServices';
 
-const CrimeReports =() => {
+const CrimeReports = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedReport, setSelectedReport] = useState(null);
+  const [reports, setReports] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [pagination, setPagination] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [logoutError, setLogoutError] = useState(null);
 
-  const reports = [
-    { 
-      id: '1',
-      referenceNumber: 'RPT-2024-001234',
-      crimeType: 'theft',
-      location: 'Downtown Market, Lagos Island',
-      incidentDate: '2024-01-15T14:30:00',
-      description: 'Suspect stole a motorcycle from the parking area. Witnesses reported seeing a male suspect wearing a black hoodie fleeing the scene on the stolen vehicle. CCTV footage available.',
-      status: 'investigating',
-      evidence: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=600&fit=crop',
-      createdAt: '2024-01-15T15:00:00'
-    },
-    { 
-      id: '2',
-      referenceNumber: 'RPT-2024-001235',
-      crimeType: 'assault',
-      location: 'Park Avenue, Victoria Island',
-      incidentDate: '2024-01-14T20:15:00',
-      description: 'Physical altercation between two individuals near the park entrance. Victim sustained minor injuries and was treated at the scene. Two suspects identified and currently being sought.',
-      status: 'investigating',
-      evidence: 'https://images.unsplash.com/photo-1590212151175-e58edd96185b?w=800&h=600&fit=crop',
-      createdAt: '2024-01-14T20:45:00'
-    },
-    { 
-      id: '3',
-      referenceNumber: 'RPT-2024-001236',
-      crimeType: 'vandalism',
-      location: 'City Hall, Ikeja',
-      incidentDate: '2024-01-10T03:00:00',
-      description: 'Graffiti and property damage reported on the exterior walls of City Hall. Estimated repair costs being assessed. No suspects identified at this time.',
-      status: 'resolved',
-      evidence: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop',
-      createdAt: '2024-01-10T08:30:00'
-    },
-    { 
-      id: '4',
-      referenceNumber: 'RPT-2024-001237',
-      crimeType: 'drugs',
-      location: 'East District, Surulere',
-      incidentDate: '2024-01-12T18:00:00',
-      description: 'Anonymous tip led to discovery of illegal substances in abandoned building. Multiple suspects detained for questioning. Evidence collected and being processed.',
-      status: 'investigating',
-      evidence: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=600&fit=crop',
-      createdAt: '2024-01-12T19:00:00'
-    },
-    { 
-      id: '5',
-      referenceNumber: 'RPT-2024-001238',
-      crimeType: 'suspicious',
-      location: 'Harbor Road, Apapa',
-      incidentDate: '2024-01-13T22:30:00',
-      description: 'Resident reported suspicious activity near warehouse district. Patrol officers investigated and found no immediate threat. Area remains under increased surveillance.',
-      status: 'closed',
-      evidence: null,
-      createdAt: '2024-01-13T23:00:00'
-    },
-    { 
-      id: '6',
-      referenceNumber: 'RPT-2024-001239',
-      crimeType: 'theft',
-      location: 'Shopping Mall, Lekki',
-      incidentDate: '2024-01-16T11:00:00',
-      description: 'Shoplifting incident reported at electronics store. Suspect caught on surveillance camera. Store security detained individual until officers arrived.',
-      status: 'pending',
-      evidence: 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?w=800&h=600&fit=crop',
-      createdAt: '2024-01-16T11:30:00'
-    },
-  ];
+  const { logOutUser, authUser } = AuthService();
+  const{getAllReports,getReportByReference ,getReportStats } = CrimeService()
+  const navigate = useNavigate();
+  const fullName= authUser.full_name.split(" ").slice(0, 2).join(" ");
+
+  // Fetch reports
+  const fetchReports = async () => {
+    setLoading(true);
+    setError(null);
+    
+    const filters = {
+      status: selectedFilter === 'all' ? '' : selectedFilter,
+      search: searchTerm,
+      page: currentPage,
+      limit: 10,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    };
+
+    const result = await getAllReports(filters);
+    
+    if (result.success) {
+      setReports(result.data);
+      setStats(result.stats);
+      setPagination(result.pagination);
+    } else {
+      setError(result.message);
+    }
+    setLoading(false);
+  };
+
+  // Initial fetch and refetch when filters change
+  useEffect(() => {
+    fetchReports();
+  }, [selectedFilter, currentPage]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm !== undefined) {
+        setCurrentPage(1); // Reset to first page on search
+        fetchReports();
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    console.log(authUser)
+  }, [authUser]);
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    const result = await logOutUser();
+    if (result.status === 200) {
+      console.log("User Logged Out!");
+      navigate('/admin/signin');
+      console.log(result.message);
+    } else {
+      setLogoutError(result.message);
+    }
+  };
+
+  const handleFilterChange = (filter) => {
+    setSelectedFilter(filter);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
+  const handlePageChange = (direction) => {
+    if (direction === 'next' && pagination?.hasNextPage) {
+      setCurrentPage(prev => prev + 1);
+    } else if (direction === 'prev' && pagination?.hasPrevPage) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
+  const viewReportDetails = async (referenceNumber) => {
+    const result = await getReportByReference(referenceNumber);
+    if (result.success) {
+      setSelectedReport(result.data);
+    } else {
+      setError(result.message);
+    }
+  };
 
   const getStatusConfig = (status) => {
     const configs = {
@@ -147,20 +173,12 @@ const CrimeReports =() => {
     });
   };
 
-  const stats = [
-    { label: 'Total Reports', value: '234', color: 'bg-blue-500' },
-    { label: 'Pending', value: '45', color: 'bg-yellow-500' },
-    { label: 'Investigating', value: '89', color: 'bg-orange-500' },
-    { label: 'Resolved', value: '100', color: 'bg-green-500' },
-  ];
-
-  const filteredReports = reports.filter(report => {
-    const matchesFilter = selectedFilter === 'all' || report.status === selectedFilter;
-    const matchesSearch = report.referenceNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.location.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+  const statsDisplay = stats ? [
+    { label: 'Total Reports', value: stats.total || 0, color: 'bg-blue-500' },
+    { label: 'Pending', value: stats.pending || 0, color: 'bg-yellow-500' },
+    { label: 'Investigating', value: stats.investigating || 0, color: 'bg-orange-500' },
+    { label: 'Resolved', value: stats.resolved || 0, color: 'bg-green-500' },
+  ] : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -195,7 +213,7 @@ const CrimeReports =() => {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full flex items-center justify-center text-white font-semibold">
-                  O
+                  {authUser?.fullName?.charAt(0).toUpperCase() || 'O'}
                 </div>
               </div>
             </div>
@@ -209,32 +227,32 @@ const CrimeReports =() => {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out mt-16 lg:mt-0`}>
           <div className="p-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-6">Officer Interface</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-6">{fullName}</h2>
             <nav className="space-y-2">
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <LayoutDashboard size={20} />
                 Dashboard
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <FileText size={20} />
+              <a href="/cases/all-cases" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <Activity size={20} />
                 Cases
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
-                <AlertTriangle size={20} />
-                Reports
+              <a href="/reports/all" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
+                <FileText size={20} />
+                Crime Reports
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <AlertCircle size={20} />
-                Alerts
+              <a href="/users/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <Users size={20} />
+                User Management
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/profile" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Users size={20} />
                 Profile
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <button onClick={handleLogout} className="flex w-full items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Settings size={20} />
                 Logout
-              </a>
+              </button>
             </nav>
           </div>
         </aside>
@@ -249,15 +267,24 @@ const CrimeReports =() => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {stats.map((stat, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition-shadow">
-                  <div className={`${stat.color} w-3 h-12 rounded-full mb-2`}></div>
-                  <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
-                  <p className="text-sm text-gray-600">{stat.label}</p>
-                </div>
-              ))}
-            </div>
+            {statsDisplay.length > 0 && (
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {statsDisplay.map((stat, index) => (
+                  <div key={index} className="bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition-shadow">
+                    <div className={`${stat.color} w-3 h-12 rounded-full mb-2`}></div>
+                    <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
+                    <p className="text-sm text-gray-600">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                {error}
+              </div>
+            )}
 
             {/* Main Content Card */}
             <div className="bg-white rounded-xl shadow-lg">
@@ -279,7 +306,7 @@ const CrimeReports =() => {
                   {/* Filter Buttons */}
                   <div className="flex gap-2 flex-wrap">
                     <button
-                      onClick={() => setSelectedFilter('all')}
+                      onClick={() => handleFilterChange('all')}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         selectedFilter === 'all'
                           ? 'bg-[#2E7BC4] text-white'
@@ -289,7 +316,7 @@ const CrimeReports =() => {
                       All
                     </button>
                     <button
-                      onClick={() => setSelectedFilter('pending')}
+                      onClick={() => handleFilterChange('pending')}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         selectedFilter === 'pending'
                           ? 'bg-yellow-500 text-white'
@@ -299,7 +326,7 @@ const CrimeReports =() => {
                       Pending
                     </button>
                     <button
-                      onClick={() => setSelectedFilter('investigating')}
+                      onClick={() => handleFilterChange('investigating')}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         selectedFilter === 'investigating'
                           ? 'bg-blue-500 text-white'
@@ -309,7 +336,7 @@ const CrimeReports =() => {
                       Investigating
                     </button>
                     <button
-                      onClick={() => setSelectedFilter('resolved')}
+                      onClick={() => handleFilterChange('resolved')}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         selectedFilter === 'resolved'
                           ? 'bg-green-500 text-white'
@@ -321,7 +348,10 @@ const CrimeReports =() => {
                   </div>
 
                   {/* New Report Button */}
-                  <button className="flex items-center gap-2 px-6 py-3 bg-[#2E7BC4] text-white rounded-lg font-semibold hover:bg-[#1a5a94] transition-colors whitespace-nowrap">
+                  <button 
+                    onClick={() => navigate('/report/form')}
+                    className="flex items-center gap-2 px-6 py-3 bg-[#2E7BC4] text-white rounded-lg font-semibold hover:bg-[#1a5a94] transition-colors whitespace-nowrap"
+                  >
                     <Plus size={20} />
                     New Report
                   </button>
@@ -329,84 +359,117 @@ const CrimeReports =() => {
               </div>
 
               {/* Reports List */}
-              <div className="divide-y divide-gray-200">
-                {filteredReports.map((report) => {
-                  const statusConfig = getStatusConfig(report.status);
-                  const crimeTypeConfig = getCrimeTypeConfig(report.crimeType);
-                  const StatusIcon = statusConfig.icon;
+              {loading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader className="animate-spin text-[#2E7BC4]" size={40} />
+                </div>
+              ) : reports.length === 0 ? (
+                <div className="text-center py-20 text-gray-500">
+                  <FileText size={48} className="mx-auto mb-4 text-gray-300" />
+                  <p className="text-lg">No reports found</p>
+                  <p className="text-sm">Try adjusting your filters or search terms</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {reports.map((report) => {
+                    const statusConfig = getStatusConfig(report.status);
+                    const crimeTypeConfig = getCrimeTypeConfig(report.crimeType);
+                    const StatusIcon = statusConfig.icon;
 
-                  return (
-                    <div
-                      key={report.id}
-                      onClick={() => setSelectedReport(report)}
-                      className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
-                    >
-                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        {/* Left Section */}
-                        <div className="flex-1">
-                          <div className="flex items-start gap-3 mb-2">
-                            {/* Crime Type Indicator */}
-                            <div className={`w-1 h-16 ${crimeTypeConfig.color} rounded-full flex-shrink-0`}></div>
-                            
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 flex-wrap mb-2">
-                                <span className="font-bold text-gray-800 text-lg">{report.referenceNumber}</span>
-                                <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusConfig.color} flex items-center gap-1`}>
-                                  <StatusIcon size={14} />
-                                  {statusConfig.label}
-                                </span>
-                                <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${crimeTypeConfig.color}`}>
-                                  {crimeTypeConfig.icon} {crimeTypeConfig.label}
-                                </span>
-                                {report.evidence && (
-                                  <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-semibold flex items-center gap-1">
-                                    <Image size={12} />
-                                    Evidence
+                    return (
+                      <div
+                        key={report._id}
+                        onClick={() => viewReportDetails(report.referenceNumber)}
+                        className="p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                      >
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                          {/* Left Section */}
+                          <div className="flex-1">
+                            <div className="flex items-start gap-3 mb-2">
+                              {/* Crime Type Indicator */}
+                              <div className={`w-1 h-16 ${crimeTypeConfig.color} rounded-full flex-shrink-0`}></div>
+                              
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 flex-wrap mb-2">
+                                  <span className="font-bold text-gray-800 text-lg">{report.referenceNumber}</span>
+                                  <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusConfig.color} flex items-center gap-1`}>
+                                    <StatusIcon size={14} />
+                                    {statusConfig.label}
                                   </span>
-                                )}
-                              </div>
-                              
-                              <p className="text-gray-700 mb-3 line-clamp-2">{report.description}</p>
-                              
-                              <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                                <span className="flex items-center gap-1">
-                                  <MapPin size={14} />
-                                  {report.location}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Calendar size={14} />
-                                  {formatDate(report.incidentDate)}
-                                </span>
+                                  <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${crimeTypeConfig.color}`}>
+                                    {crimeTypeConfig.icon} {crimeTypeConfig.label}
+                                  </span>
+                                  {report.evidence && (
+                                    <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-semibold flex items-center gap-1">
+                                      <Image size={12} />
+                                      Evidence
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                <p className="text-gray-700 mb-3 line-clamp-2">{report.description}</p>
+                                
+                                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                                  <span className="flex items-center gap-1">
+                                    <MapPin size={14} />
+                                    {report.location}
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Calendar size={14} />
+                                    {formatDate(report.incidentDate)}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Right Section - Action Button */}
-                        <div className="flex items-center gap-2">
-                          <button className="flex items-center gap-2 px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
-                            View Details
-                            <ChevronRight size={18} />
-                          </button>
+                          {/* Right Section - Action Button */}
+                          <div className="flex items-center gap-2">
+                            <button className="flex items-center gap-2 px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                              View Details
+                              <ChevronRight size={18} />
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Pagination */}
-              <div className="p-6 border-t border-gray-200 flex justify-between items-center">
-                <p className="text-sm text-gray-600">Showing 1-{filteredReports.length} of 234 reports</p>
-                <div className="flex gap-2">
-                  <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-                    Previous
-                  </button>
-                  <button className="px-4 py-2 bg-[#2E7BC4] text-white rounded-lg hover:bg-[#1a5a94] transition-colors font-medium">
-                    Next
-                  </button>
+              {pagination && (
+                <div className="p-6 border-t border-gray-200 flex justify-between items-center">
+                  <p className="text-sm text-gray-600">
+                    Showing {((pagination.currentPage - 1) * pagination.limit) + 1}-
+                    {Math.min(pagination.currentPage * pagination.limit, pagination.totalReports)} of {pagination.totalReports} reports
+                  </p>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => handlePageChange('prev')}
+                      disabled={!pagination.hasPrevPage}
+                      className={`px-4 py-2 border border-gray-300 rounded-lg transition-colors font-medium ${
+                        pagination.hasPrevPage 
+                          ? 'hover:bg-gray-50 cursor-pointer' 
+                          : 'opacity-50 cursor-not-allowed'
+                      }`}
+                    >
+                      Previous
+                    </button>
+                    <button 
+                      onClick={() => handlePageChange('next')}
+                      disabled={!pagination.hasNextPage}
+                      className={`px-4 py-2 rounded-lg transition-colors font-medium ${
+                        pagination.hasNextPage
+                          ? 'bg-[#2E7BC4] text-white hover:bg-[#1a5a94] cursor-pointer'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </main>
@@ -439,7 +502,7 @@ const CrimeReports =() => {
             {/* Modal Content */}
             <div className="p-6">
               {/* Status and Crime Type */}
-              <div className="flex gap-3 mb-6">
+              <div className="flex gap-3 mb-6 flex-wrap">
                 {(() => {
                   const statusConfig = getStatusConfig(selectedReport.status);
                   const crimeTypeConfig = getCrimeTypeConfig(selectedReport.crimeType);
@@ -505,13 +568,23 @@ const CrimeReports =() => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-4 border-t border-gray-200">
-                <button className="flex-1 px-6 py-3 bg-[#2E7BC4] text-white rounded-lg font-semibold hover:bg-[#1a5a94] transition-colors">
+              <div className="flex gap-3 pt-4 border-t border-gray-200 flex-wrap">
+                <button 
+                  onClick={() => navigate('/cases/all-cases')}
+                  className="flex-1 px-6 py-3 bg-[#2E7BC4] text-white rounded-lg font-semibold hover:bg-[#1a5a94] transition-colors"
+                >
                   Assign to Case
                 </button>
-                <button className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
-                  Update Status
-                </button>
+                <select
+                  value={selectedReport.status}
+                  onChange={(e) => handleStatusUpdate(selectedReport.referenceNumber, e.target.value)}
+                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors cursor-pointer"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="investigating">Investigating</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="closed">Closed</option>
+                </select>
                 <button className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
                   Export
                 </button>
@@ -523,4 +596,5 @@ const CrimeReports =() => {
     </div>
   );
 }
+
 export default CrimeReports;

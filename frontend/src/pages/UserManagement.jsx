@@ -15,7 +15,8 @@ import {
   BarChart3,
   Settings,
   UserCheck,
-  Shield
+  Shield,
+  Activity,
 } from 'lucide-react';
 
 const UserManagement = () =>{
@@ -140,21 +141,25 @@ const UserManagement = () =>{
           <div className="p-6">
             <h2 className="text-lg font-bold text-gray-800 mb-6">Admin Interface</h2>
             <nav className="space-y-2">
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <LayoutDashboard size={20} />
                 Dashboard
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
+              <a href="/cases/all-cases" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <Activity size={20} />
+                Cases
+              </a>
+              <a href="/users/all" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
                 <Users size={20} />
                 User Management
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/reports/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <FileText size={20} />
                 Crime Reports
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <BarChart3 size={20} />
-                Data Analytics
+              <a href="/profile" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <Users size={20} />
+                Profile
               </a>
               <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Settings size={20} />

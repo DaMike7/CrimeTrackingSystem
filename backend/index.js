@@ -5,7 +5,8 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import userRoutes from './src/routes/user.routes.js'
 import authRoutes from './src/routes/auth.routes.js'
-
+import crimeRoutes from './src/routes/crimes.routes.js'
+import caseRoutes from './src/routes/cases.routes.js'
 
 dotenv.config();
 
@@ -24,7 +25,8 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/', userRoutes);
-
+app.use('/api/crime', crimeRoutes);
+app.use('api/case',caseRoutes)
 // Start server
 connectDB().then(() => {
   app.listen(PORT, () => {

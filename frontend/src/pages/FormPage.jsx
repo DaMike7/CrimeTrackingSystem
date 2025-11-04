@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { Shield, MapPin, Calendar, FileText, Upload, CheckCircle, ChevronRight, ChevronLeft,ArrowLeft, LocateFixed } from 'lucide-react';
 import { Link } from 'react-router';
+import CrimeService from '../services/CrimeServices';
+import { LoaderCircle } from 'lucide-react';
 
 const AnonymousReport = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     crimeType: '',
     location: '',
-    date: '',
-    time: '',
+    incidentDate: '',
     description: '',
     evidence: []
   });
   const [submitted, setSubmitted] = useState(false);
-  const [referenceNumber, setReferenceNumber] = useState('');
+  const {submitForm} = CrimeService()
+  const [error, setError] = useState(null);
+  const [resMsg, setResMsg] = useState(null);
+  const [loading,setLoading] = useState(false)
 
   const crimeTypes = [
     { id: 'theft', name: 'Theft', icon: '🔓' },
@@ -32,12 +36,21 @@ const AnonymousReport = () => {
     if (step > 1) setStep(step - 1);
   };
 
-  const handleSubmit = () => {
-    const refNum = 'CR-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    setReferenceNumber(refNum);
-    setSubmitted(true);
-    console.log('Form submitted:', formData);
-  };
+  const handleSubmit= async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+      console.log(formData)
+        const result = await submitForm(formData);
+
+        if (result.success) {
+            setResMsg('Success !')
+            setLoading(false)
+        } else {
+            setError(result.message);
+            setLoading(false);
+        }    
+    };
 
   const updateFormData = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -200,18 +213,22 @@ const AnonymousReport = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                      <Calendar className="w-4 h-4" />
-                      Date
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) => updateFormData('date', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E7BC4]"
-                    />
-                  </div>
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <Calendar className="w-4 h-4" />
+                  Date
+                </label>
+                <input
+                  type="date"
+                  value={formData.incidentDate ? formData.incidentDate.split('T')[0] : ''}
+                  onChange={(e) => {
+                    const dateValue = e.target.value;
+                    const timeValue = formData.incidentDate ? new Date(formData.incidentDate).toTimeString().slice(0, 5) : '00:00';
+                    updateFormData('incidentDate', `${dateValue}T${timeValue}`);
+                  }}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E7BC4]"
+                />
+              </div>
 
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -300,12 +317,12 @@ const AnonymousReport = () => {
                 onClick={handleNext}
                 disabled={
                   (step === 1 && !formData.crimeType) ||
-                  (step === 2 && (!formData.location || !formData.date)) ||
+                  (step === 2 && (!formData.location || !formData.incidentDate)) ||
                   (step === 3 && !formData.description)
                 }
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-colors ${
                   (step === 1 && !formData.crimeType) ||
-                  (step === 2 && (!formData.location || !formData.date)) ||
+                  (step === 2 && (!formData.location || !formData.incidentDate)) ||
                   (step === 3 && !formData.description)
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-[#2E7BC4] text-white hover:bg-[#1a5a94]'
@@ -319,9 +336,22 @@ const AnonymousReport = () => {
                 onClick={handleSubmit}
                 className="flex items-center gap-2 px-8 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors"
               >
-                Submit Report
-                <CheckCircle className="w-5 h-5" />
+                {loading ? (
+                <LoaderCircle className="animate-spin" size={20} />
+              ) : (
+                "Submit Report "
+              )}
               </button>
+            )}
+            {error && (
+              <div className="mt-2 text-sm font-semibold">
+                  {error}
+              </div>
+            )}
+            {resMsg && (
+                <div className="mt-2 text-sm font-semibold">
+                    {resMsg}
+                </div>
             )}
           </div>
         </div>

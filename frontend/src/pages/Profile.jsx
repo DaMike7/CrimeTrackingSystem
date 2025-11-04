@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { 
   LocateFixed,
   Menu,
@@ -18,28 +18,32 @@ import {
   Edit,
   Camera,
   UserCheck,
-  Search
+  Search,
+  Activity
 } from 'lucide-react';
+import AuthService from '../services/AuthService';
 
 const Profile = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const{authUser} = AuthService()
+  const fullName = authUser?.full_name
+    ? authUser.full_name.split(" ").slice(0, 2).join(" ")
+    : "User";
 
-  // Mock user data
-  const user = {
-    email: 'john.smith@police.gov',
-    full_name: 'John Smith',
-    phone_number: '+1 (234) 567-8900',
-    username: 'jsmith',
-    profile_picture: '',
-    userType: 'officer',
-    badge_number: 'BD-2024-001',
-    rank: 'Detective',
-    department: 'Criminal Investigation',
-    createdAt: '2024-01-15',
-    lastLogin: '2024-11-02 14:30',
-    casesAssigned: 23,
-    casesCompleted: 18,
-    status: 'Active'
+  useEffect(() => {
+      console.log(authUser)
+  }, [authUser]);
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    const result = await logOutUser();
+    if (result.status === 200) {
+      console.log("User Logged Out!");
+      navigate('/admin/signin');
+      console.log(result.message);
+    } else {
+      setLogoutError(result.message);
+    }
   };
 
   return (
@@ -61,7 +65,7 @@ const Profile = () => {
                 <span className="text-xl font-black text-gray-800">C-TRACK</span>
               </div>
               <span className="hidden sm:block px-3 py-1 bg-blue-100 text-[#2E7BC4] text-xs font-semibold rounded-full">
-                OFFICER
+                {authUser.userType.toUpperCase()}
               </span>
             </div>
 
@@ -77,7 +81,7 @@ const Profile = () => {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full flex items-center justify-center text-white font-semibold">
-                  {user.full_name.charAt(0)}
+                  {authUser.full_name.charAt(0)}
                 </div>
               </div>
             </div>
@@ -91,32 +95,34 @@ const Profile = () => {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out mt-16 lg:mt-0`}>
           <div className="p-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-6">Officer Interface</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-6">{fullName}</h2>
             <nav className="space-y-2">
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              { authUser?.userType === 'admin' && (
+              <a href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <LayoutDashboard size={20} />
                 Dashboard
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <FileText size={20} />
+              )}
+              <a href="/cases/all-cases" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <Activity size={20} />
                 Cases
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/users/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Users size={20} />
-                Reports
+                User Management
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <AlertCircle size={20} />
-                Alerts
+              <a href="/reports/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <FileText size={20} />
+                Crime Reports
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
+              <a href="/profile" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
                 <Users size={20} />
                 Profile
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Settings size={20} />
                 Logout
-              </a>
+              </button>
             </nav>
           </div>
         </aside>
@@ -141,7 +147,7 @@ const Profile = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 -mt-16 mb-6">
                   <div className="relative">
                     <div className="w-32 h-32 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full border-4 border-white flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-                      {user.full_name.charAt(0)}
+                      {authUser.full_name.charAt(0)}
                     </div>
                     <button className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors">
                       <Camera size={18} className="text-gray-600" />
@@ -151,27 +157,22 @@ const Profile = () => {
                   <div className="flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
-                        <h2 className="text-2xl font-bold text-gray-800">{user.full_name}</h2>
-                        <p className="text-gray-600">@{user.username}</p>
+                        <h2 className="text-2xl font-bold text-gray-800">{authUser.full_name}</h2>
+                        <p className="text-gray-600">@{authUser.username}</p>
                         <div className="flex items-center gap-2 mt-2">
                           <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
-                            user.userType === 'admin' 
+                            authUser.userType === 'admin' 
                               ? 'bg-purple-100 text-purple-700' 
                               : 'bg-green-100 text-green-700'
                           }`}>
-                            {user.userType === 'admin' ? <Shield size={12} /> : <UserCheck size={12} />}
-                            {user.userType.toUpperCase()}
+                            {authUser.userType === 'admin' ? <Shield size={12} /> : <UserCheck size={12} />}
+                            {authUser.userType.toUpperCase()}
                           </span>
                           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                            ● {user.status}
+                            ● ACTIVE
                           </span>
                         </div>
                       </div>
-
-                      <button className="flex items-center gap-2 px-6 py-3 bg-[#2E7BC4] text-white rounded-lg font-semibold hover:bg-[#1a5a94] transition-colors">
-                        <Edit size={18} />
-                        Edit Profile
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -187,11 +188,11 @@ const Profile = () => {
                     <div className="space-y-4">
                       <div className="bg-gray-50 rounded-lg p-4">
                         <p className="text-xs text-gray-500 mb-1">Email Address</p>
-                        <p className="font-medium text-gray-800">{user.email}</p>
+                        <p className="font-medium text-gray-800">{authUser.email}</p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-4">
                         <p className="text-xs text-gray-500 mb-1">Phone Number</p>
-                        <p className="font-medium text-gray-800">{user.phone_number}</p>
+                        <p className="font-medium text-gray-800">{authUser.phone_number}</p>
                       </div>
                     </div>
                   </div>
@@ -207,41 +208,23 @@ const Profile = () => {
                         <Award className="text-[#2E7BC4]" size={20} />
                         <div>
                           <p className="text-xs text-gray-500">Badge Number</p>
-                          <p className="font-medium text-gray-800">{user.badge_number}</p>
+                          <p className="font-medium text-gray-800">{authUser.badge_number}</p>
                         </div>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-4 flex items-center gap-3">
                         <Shield className="text-[#2E7BC4]" size={20} />
                         <div>
                           <p className="text-xs text-gray-500">Rank</p>
-                          <p className="font-medium text-gray-800">{user.rank}</p>
+                          <p className="font-medium text-gray-800">{authUser.rank}</p>
                         </div>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-4 flex items-center gap-3">
                         <Building2 className="text-[#2E7BC4]" size={20} />
                         <div>
                           <p className="text-xs text-gray-500">Department</p>
-                          <p className="font-medium text-gray-800">{user.department}</p>
+                          <p className="font-medium text-gray-800">{authUser.department}</p>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Account Information */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <Calendar className="text-[#2E7BC4]" size={20} />
-                    Account Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-xs text-gray-500 mb-1">Account Created</p>
-                      <p className="font-medium text-gray-800">{user.createdAt}</p>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-xs text-gray-500 mb-1">Last Login</p>
-                      <p className="font-medium text-gray-800">{user.lastLogin}</p>
                     </div>
                   </div>
                 </div>

@@ -38,14 +38,6 @@ const anonymousReportSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Auto-generate reference number
-anonymousReportSchema.pre('save', function(next) {
-    if (!this.referenceNumber) {
-        this.referenceNumber = 'CR-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    }
-    next();
-});
-
 const AnonymousReport = mongoose.model("AnonymousReport", anonymousReportSchema);
 
 
@@ -108,13 +100,6 @@ const caseSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-// Auto-generate case number
-caseSchema.pre('save', function(next) {
-    if (!this.caseNumber) {
-        this.caseNumber = 'CASE-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
-    }
-    next();
-});
 
 const Case = mongoose.model("Case", caseSchema);
 

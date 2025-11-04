@@ -12,6 +12,7 @@ import Cases from './pages/Cases.jsx';
 import Profile from './pages/Profile.jsx';
 import UserManagement from './pages/UserManagement.jsx';
 import CrimeReports from './pages/CrimeReports.jsx';
+import { Routing } from './services/PrivateRoute.jsx';
 
 const router = createBrowserRouter([
   {
@@ -28,23 +29,23 @@ const router = createBrowserRouter([
   },
    {
     path: '/reports/all',
-    element: <CrimeReports />
+    element: <Routing.PrivateRoute><CrimeReports /></Routing.PrivateRoute>
   },
     {
     path: '/cases/all-cases',
-    element: <Cases/>
+    element: <Routing.PrivateRoute><Cases/></Routing.PrivateRoute>
   },
   {
     path: '/users/all',
-    element: <UserManagement/>
+    element: <Routing.PrivateRoute><UserManagement/></Routing.PrivateRoute>
   },
    {
     path: '/profile',
-    element: <Profile/>
+    element: <Routing.PrivateRoute><Profile/></Routing.PrivateRoute>
   },
   {
     path: '/admin/dashboard',
-    element: <AdminDashboard />
+    element: <Routing.AdminProtectedRoute><AdminDashboard /></Routing.AdminProtectedRoute>
   },
   {
     path: '*',

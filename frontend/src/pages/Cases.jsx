@@ -14,7 +14,8 @@ import {
   Users,
   FileText,
   BarChart3,
-  Settings
+  Settings,
+  Activity
 } from 'lucide-react';
 
 export default function CasesPage() {
@@ -159,23 +160,23 @@ export default function CasesPage() {
           <div className="p-6">
             <h2 className="text-lg font-bold text-gray-800 mb-6">Officer Interface</h2>
             <nav className="space-y-2">
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <LayoutDashboard size={20} />
                 Dashboard
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
-                <FileText size={20} />
+              <a href="/cases/all-cases" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
+                <Activity size={20} />
                 Cases
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/users/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Users size={20} />
-                Reports
+                User Management
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
-                <AlertCircle size={20} />
-                Alerts
+              <a href="/reports/all" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <FileText size={20} />
+                Crime Report
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <a href="/profile" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Users size={20} />
                 Profile
               </a>
@@ -235,36 +236,6 @@ export default function CasesPage() {
                       }`}
                     >
                       All
-                    </button>
-                    <button
-                      onClick={() => setSelectedFilter('open')}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        selectedFilter === 'open'
-                          ? 'bg-yellow-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      Open
-                    </button>
-                    <button
-                      onClick={() => setSelectedFilter('in-progress')}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        selectedFilter === 'in-progress'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      In Progress
-                    </button>
-                    <button
-                      onClick={() => setSelectedFilter('closed')}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        selectedFilter === 'closed'
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      Closed
                     </button>
                   </div>
 

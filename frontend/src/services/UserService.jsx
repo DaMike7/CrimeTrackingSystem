@@ -10,7 +10,7 @@ const UserService = create ((set) => ({
         set({isUsersLoading : true})
 
         try {
-            const result = await client.get(`/user/admin/getuser/all?page=${page}&limit=20`)
+            const result = await client.get(`/admin/getuser/all?page=${page}&limit=10`)
             set({allUsers:result?.data?.users})
 
             return{

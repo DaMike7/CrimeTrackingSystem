@@ -1,94 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Plus, 
   Edit, 
   Trash2, 
   Eye,
-  Filter,
   LocateFixed,
   Menu,
   X,
   LayoutDashboard,
   Users,
   FileText,
-  BarChart3,
   Settings,
   UserCheck,
   Shield,
   Activity,
+  Loader
 } from 'lucide-react';
+import UserService from '../services/UserService';
+import AuthService from '../services/AuthService';
+import { useNavigate } from 'react-router';
 
-const UserManagement = () =>{
+const UserManagement = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const {authUser, logOutUser} = AuthService()
+  const fullName= authUser.full_name.split(" ").slice(0, 2).join(" ");
 
-  const users = [
-    {
-      id: '1',
-      email: 'john.smith@police.gov',
-      full_name: 'John Smith',
-      phone_number: '+1234567890',
-      username: 'jsmith',
-      profile_picture: '',
-      userType: 'officer',
-      badge_number: 'BD-2024-001',
-      rank: 'Detective',
-      department: 'Criminal Investigation',
-      createdBy: 'Admin',
-      createdAt: '2024-01-15'
-    },
-    {
-      id: '2',
-      email: 'sarah.johnson@police.gov',
-      full_name: 'Sarah Johnson',
-      phone_number: '+1234567891',
-      username: 'sjohnson',
-      profile_picture: '',
-      userType: 'officer',
-      badge_number: 'BD-2024-002',
-      rank: 'Officer',
-      department: 'Patrol Division',
-      createdBy: 'Admin',
-      createdAt: '2024-01-14'
-    },
-    {
-      id: '3',
-      email: 'mike.williams@police.gov',
-      full_name: 'Mike Williams',
-      phone_number: '+1234567892',
-      username: 'mwilliams',
-      profile_picture: '',
-      userType: 'officer',
-      badge_number: 'BD-2024-003',
-      rank: 'Sergeant',
-      department: 'Traffic Division',
-      createdBy: 'Admin',
-      createdAt: '2024-01-12'
-    },
-    {
-      id: '4',
-      email: 'admin@police.gov',
-      full_name: 'Admin User',
-      phone_number: '+1234567893',
-      username: 'admin',
-      profile_picture: '',
-      userType: 'admin',
-      badge_number: 'N/A',
-      rank: 'N/A',
-      department: 'Administration',
-      createdBy: 'System',
-      createdAt: '2024-01-01'
-    },
+
+  const { allUsers, isUsersLoading, getUsers } = UserService();
+
+  // Fetch users on component mount and when page changes
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage]);
+
+  const fetchUsers = async () => {
+    const result = await getUsers(currentPage);
+    if (!result.success) {
+      console.error('Failed to fetch users:', result.message);
+    }
+  };
+
+  // Filter users based on search term and filter type
+  const filteredUsers = allUsers.filter(user => {
+    const matchesSearch = 
+      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.badge_number?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesFilter = filterType === 'all' || user.userType === filterType;
+
+    return matchesSearch && matchesFilter;
+  });
+
+  // Calculate stats from allUsers
+  const stats = {
+    total: allUsers.length,
+    officers: allUsers.filter(u => u.userType === 'officer').length,
+    admins: allUsers.filter(u => u.userType === 'admin').length,
+    active: allUsers.filter(u => u.isActive).length,
+  };
+
+  const statsData = [
+    { label: 'Total Users', value: stats.total.toString(), color: 'bg-blue-500' },
+    { label: 'Officers', value: stats.officers.toString(), color: 'bg-green-500' },
+    { label: 'Admins', value: stats.admins.toString(), color: 'bg-purple-500' },
+    { label: 'Active', value: stats.active.toString(), color: 'bg-orange-500' },
   ];
 
-  const stats = [
-    { label: 'Total Users', value: '48', color: 'bg-blue-500' },
-    { label: 'Officers', value: '42', color: 'bg-green-500' },
-    { label: 'Admins', value: '6', color: 'bg-purple-500' },
-    { label: 'Active Today', value: '35', color: 'bg-orange-500' },
-  ];
+  const handleNextPage = () => {
+    setCurrentPage(prev => prev + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
+  useEffect(() => {
+    console.log(authUser)
+  }, [authUser]);
+
+  const navigate = useNavigate()
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    const result = await logOutUser();
+    if (result.status === 200) {
+      console.log("User Logged Out!");
+      navigate('/admin/signin');
+      console.log(result.message);
+    } else {
+      setLogoutError(result.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -125,7 +134,7 @@ const UserManagement = () =>{
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full flex items-center justify-center text-white font-semibold">
-                  A
+                  {fullName?.charAt(0).toUpperCase() || 'O'}
                 </div>
               </div>
             </div>
@@ -139,7 +148,7 @@ const UserManagement = () =>{
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out mt-16 lg:mt-0`}>
           <div className="p-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-6">Admin Interface</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-6">{fullName}</h2>
             <nav className="space-y-2">
               <a href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <LayoutDashboard size={20} />
@@ -161,10 +170,10 @@ const UserManagement = () =>{
                 <Users size={20} />
                 Profile
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Settings size={20} />
                 Logout
-              </a>
+              </button>
             </nav>
           </div>
         </aside>
@@ -180,7 +189,7 @@ const UserManagement = () =>{
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              {stats.map((stat, index) => (
+              {statsData.map((stat, index) => (
                 <div key={index} className="bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition-shadow">
                   <div className={`${stat.color} w-3 h-12 rounded-full mb-2`}></div>
                   <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
@@ -249,112 +258,129 @@ const UserManagement = () =>{
               </div>
 
               {/* Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        User
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Contact
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Role
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Badge/Rank
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Department
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Created
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {users.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                        {/* User Info */}
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full flex items-center justify-center text-white font-semibold">
-                              {user.full_name.charAt(0)}
-                            </div>
-                            <div>
-                              <p className="font-semibold text-gray-800">{user.full_name}</p>
-                              <p className="text-sm text-gray-500">@{user.username}</p>
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Contact */}
-                        <td className="px-6 py-4">
-                          <p className="text-sm text-gray-800">{user.email}</p>
-                          <p className="text-sm text-gray-500">{user.phone_number}</p>
-                        </td>
-
-                        {/* Role */}
-                        <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
-                            user.userType === 'admin' 
-                              ? 'bg-purple-100 text-purple-700' 
-                              : 'bg-green-100 text-green-700'
-                          }`}>
-                            {user.userType === 'admin' ? <Shield size={12} /> : <UserCheck size={12} />}
-                            {user.userType.toUpperCase()}
-                          </span>
-                        </td>
-
-                        {/* Badge/Rank */}
-                        <td className="px-6 py-4">
-                          <p className="text-sm font-medium text-gray-800">{user.badge_number}</p>
-                          <p className="text-sm text-gray-500">{user.rank}</p>
-                        </td>
-
-                        {/* Department */}
-                        <td className="px-6 py-4">
-                          <p className="text-sm text-gray-800">{user.department}</p>
-                        </td>
-
-                        {/* Created */}
-                        <td className="px-6 py-4">
-                          <p className="text-sm text-gray-800">{user.createdAt}</p>
-                          <p className="text-sm text-gray-500">by {user.createdBy}</p>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                              <Eye size={18} />
-                            </button>
-                            <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                              <Edit size={18} />
-                            </button>
-                            <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                              <Trash2 size={18} />
-                            </button>
-                          </div>
-                        </td>
+              {isUsersLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader className="animate-spin text-[#2E7BC4]" size={40} />
+                </div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="text-center py-20">
+                  <p className="text-gray-500 text-lg">No users found</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          User
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Contact
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Role
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Badge/Rank
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Department
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Created
+                        </th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filteredUsers.map((user) => (
+                        <tr key={user._id} className="hover:bg-gray-50 transition-colors">
+                          {/* User Info */}
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full flex items-center justify-center text-white font-semibold">
+                                {user.full_name?.charAt(0) || 'U'}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-800">{user.full_name}</p>
+                                <p className="text-sm text-gray-500">@{user.username}</p>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Contact */}
+                          <td className="px-6 py-4">
+                            <p className="text-sm text-gray-800">{user.email}</p>
+                            <p className="text-sm text-gray-500">{user.phone_number}</p>
+                          </td>
+
+                          {/* Role */}
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
+                              user.userType === 'admin' 
+                                ? 'bg-purple-100 text-purple-700' 
+                                : 'bg-green-100 text-green-700'
+                            }`}>
+                              {user.userType === 'admin' ? <Shield size={12} /> : <UserCheck size={12} />}
+                              {user.userType?.toUpperCase()}
+                            </span>
+                          </td>
+
+                          {/* Badge/Rank */}
+                          <td className="px-6 py-4">
+                            <p className="text-sm font-medium text-gray-800">{user.badge_number || 'N/A'}</p>
+                            <p className="text-sm text-gray-500">{user.rank || 'N/A'}</p>
+                          </td>
+
+                          {/* Department */}
+                          <td className="px-6 py-4">
+                            <p className="text-sm text-gray-800">{user.department || 'N/A'}</p>
+                          </td>
+
+                          {/* Created */}
+                          <td className="px-6 py-4">
+                            <p className="text-sm text-gray-800">{new Date(user.createdAt).toLocaleDateString()}</p>
+                            <p className="text-sm text-gray-500">by {user.createdBy?.full_name || 'System'}</p>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                <Eye size={18} />
+                              </button>
+                              <button className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors">
+                                <Edit size={18} />
+                              </button>
+                              <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <Trash2 size={18} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
               {/* Pagination */}
               <div className="p-6 border-t border-gray-200 flex justify-between items-center">
-                <p className="text-sm text-gray-600">Showing 1-4 of 48 users</p>
+                <p className="text-sm text-gray-600">Showing {filteredUsers.length} users</p>
                 <div className="flex gap-2">
-                  <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                  <button 
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     Previous
                   </button>
-                  <button className="px-4 py-2 bg-[#2E7BC4] text-white rounded-lg hover:bg-[#1a5a94] transition-colors font-medium">
+                  <button 
+                    onClick={handleNextPage}
+                    className="px-4 py-2 bg-[#2E7BC4] text-white rounded-lg hover:bg-[#1a5a94] transition-colors font-medium"
+                  >
                     Next
                   </button>
                 </div>

@@ -4,6 +4,6 @@ import { protectAdminRoute } from '../middleware/auth.middleware.js';
 
 const router = express.Router()
 
-router.get('/admin/getuser/all',protectAdminRoute,showAllUsers);
+router.get('/getuser/all',protectAdminRoute,showAllUsers);
 
 export default router;

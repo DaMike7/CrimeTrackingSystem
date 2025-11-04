@@ -25,7 +25,7 @@ import AuthService from '../services/AuthService';
 
 const Profile = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const{authUser} = AuthService()
+  const{authUser,logOutUser} = AuthService()
   const fullName = authUser?.full_name
     ? authUser.full_name.split(" ").slice(0, 2).join(" ")
     : "User";

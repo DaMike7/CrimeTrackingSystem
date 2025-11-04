@@ -213,7 +213,7 @@ const CrimeReports = () => {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full flex items-center justify-center text-white font-semibold">
-                  {authUser?.fullName?.charAt(0).toUpperCase() || 'O'}
+                  {fullName?.charAt(0).toUpperCase() || 'O'}
                 </div>
               </div>
             </div>

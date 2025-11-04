@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Users, 
@@ -19,14 +19,17 @@ import {
   Activity
 } from 'lucide-react';
 import { Link, Navigate, useNavigate } from 'react-router';
+import AuthService from '../services/AuthService';
 
 export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const {authUser,logOutUser} = AuthService()
+  const fullName= authUser.full_name.split(" ").slice(0, 2).join(" ");
+  
   const stats = [
-    { label: 'Total Cases', value: '245', icon: FileText, color: 'bg-blue-500' },
-    { label: 'Total Officers', value: '18', icon: Users, color: 'bg-red-500' },
-    { label: 'Total Crime Reports', value: '32', icon: TrendingUp, color: 'bg-green-500' },
+    { label: 'Total Cases', value: '2', icon: FileText, color: 'bg-blue-500' },
+    { label: 'Total Officers', value: '0', icon: Users, color: 'bg-red-500' },
+    { label: 'Total Crime Reports', value: '4', icon: TrendingUp, color: 'bg-green-500' },
   ];
 
   const recentReports = [
@@ -34,6 +37,23 @@ export default function AdminDashboard() {
     { id: 'CR-B7Y2M', type: 'Assault', location: 'Park Avenue', status: 'Investigating', time: '5 hours ago' },
     { id: 'CR-C3K5N', type: 'Vandalism', location: 'City Hall', status: 'Closed', time: '1 day ago' },
   ];
+
+   useEffect(() => {
+      console.log(authUser)
+    }, [authUser]);
+
+    const navigate = useNavigate()
+    const handleLogout = async (e) => {
+      e.preventDefault();
+      const result = await logOutUser();
+      if (result.status === 200) {
+        console.log("User Logged Out!");
+        navigate('/admin/signin');
+        console.log(result.message);
+      } else {
+        setLogoutError(result.message);
+      }
+    };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,7 +90,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2E7BC4] to-[#1a5a94] rounded-full flex items-center justify-center text-white font-semibold">
-                  A
+                  {fullName?.charAt(0).toUpperCase() || 'O'}
                 </div>
               </div>
             </div>
@@ -84,7 +104,7 @@ export default function AdminDashboard() {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transition-transform duration-300 ease-in-out mt-16 lg:mt-0`}>
           <div className="p-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-6">Admin Interface</h2>
+            <h2 className="text-lg font-bold text-gray-800 mb-6">{fullName}</h2>
             <nav className="space-y-2">
               <a href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#2E7BC4] rounded-lg font-medium">
                 <LayoutDashboard size={20} />
@@ -106,10 +126,10 @@ export default function AdminDashboard() {
                 <Users size={20} />
                 Profile
               </a>
-              <a href="#" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+              <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
                 <Settings size={20} />
                 Logout
-              </a>
+              </button>
             </nav>
           </div>
         </aside>
@@ -159,7 +179,7 @@ export default function AdminDashboard() {
                     <Eye className="text-purple-600 mb-3" size={32} />
                     <span className="font-semibold text-gray-800">View Reports</span>
                   </Link>
-                  <Link to='/reports/new' className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl hover:shadow-md transition-shadow">
+                  <Link to='/reports/form' className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl hover:shadow-md transition-shadow">
                     <FilePlus className="text-orange-600 mb-3" size={32} />
                     <span className="font-semibold text-gray-800">Add Report</span>
                   </Link>
